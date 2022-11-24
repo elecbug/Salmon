@@ -43,7 +43,8 @@ namespace Salmon.Chess
                         Visible = true,
                         Size = new Size(this.Width / Board.MAXIMUM, this.Height / Board.MAXIMUM),
                         Location = new Point(x * this.Width / Board.MAXIMUM, y * this.Height / Board.MAXIMUM),
-                        BackgroundImageLayout = ImageLayout.Stretch,
+                        BorderStyle = BorderStyle.FixedSingle,
+                        BackgroundImageLayout = ImageLayout.Zoom,
                     };
 
                     this.unit_image[x, y].Click += ClickCell;
@@ -89,17 +90,22 @@ namespace Salmon.Chess
                     }
                     if (this.attack_points.Contains(new Point(x, y)))
                     {
-                        this.unit_image[x, y].BackColor = (x + y) % 2 == 0 ? Color.Pink : Color.DarkRed; 
+                        this.unit_image[x, y].BackColor = Color.Pink; 
                     }
                     else if (this.move_points.Contains(new Point(x, y)))
                     {
-                        this.unit_image[x, y].BackColor = (x + y) % 2 == 0 ? Color.LightGreen: Color.DarkGreen;    
+                        this.unit_image[x, y].BackColor = Color.LightGreen;    
                     }
                     else
                     {
-                        this.unit_image[x, y].BackColor = (x + y) % 2 == 0 ? Color.LightBlue : Color.DarkBlue;
+                        this.unit_image[x, y].BackColor = (x + y) % 2 == 0 ? Color.LightGray : Color.DarkGray;
                     } 
                 }
+            }
+            if (this.choose_unit != null)
+            {
+                this.unit_image[this.choose_unit.Location.X, this.choose_unit.Location.Y]!.BackColor
+                    = Color.LightBlue;
             }
         }
 
@@ -245,6 +251,19 @@ namespace Salmon.Chess
             this.unit_matrix[7, 0] = new Rook(this, new Point(7, 0), Team.Last);
             this.unit_matrix[0, 7] = new Rook(this, new Point(0, 7), Team.First);
             this.unit_matrix[7, 7] = new Rook(this, new Point(7, 7), Team.First);
+
+            this.unit_matrix[1, 0] = new Knight(this, new Point(1, 0), Team.Last);
+            this.unit_matrix[6, 0] = new Knight(this, new Point(6, 0), Team.Last);
+            this.unit_matrix[1, 7] = new Knight(this, new Point(1, 7), Team.First);
+            this.unit_matrix[6, 7] = new Knight(this, new Point(6, 7), Team.First);
+
+            this.unit_matrix[2, 0] = new Bishop(this, new Point(2, 0), Team.Last);
+            this.unit_matrix[5, 0] = new Bishop(this, new Point(5, 0), Team.Last);
+            this.unit_matrix[2, 7] = new Bishop(this, new Point(2, 7), Team.First);
+            this.unit_matrix[5, 7] = new Bishop(this, new Point(5, 7), Team.First);
+
+            this.unit_matrix[4, 0] = new Queen(this, new Point(4, 0), Team.Last);
+            this.unit_matrix[4, 7] = new Queen(this, new Point(4, 7), Team.First);
         }
     }
 }
