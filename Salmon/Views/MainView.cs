@@ -10,6 +10,7 @@ namespace Salmon.Views
             {
                 Parent = this,
                 Visible = true,
+                Dock = DockStyle.Fill,
             };
         }
     }

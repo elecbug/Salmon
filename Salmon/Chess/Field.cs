@@ -50,8 +50,25 @@ namespace Salmon.Chess
                 }
             }
 
+            this.Resize += ResizeField;
+
             TestCase();
+            ResizeField(this, new EventArgs());
             Repainting();
+        }
+
+        private void ResizeField(object? sender, EventArgs e)
+        {
+            for (int x = 0; x < Board.MAXIMUM; x++)
+            {
+                for (int y = 0; y < Board.MAXIMUM; y++)
+                {
+                    this.unit_image[x, y].Size
+                        = new Size(this.Width / Board.MAXIMUM, this.Height / Board.MAXIMUM);
+                    this.unit_image[x, y].Location
+                        = new Point(x * this.Width / Board.MAXIMUM, y * this.Height / Board.MAXIMUM);
+                }
+            }
         }
 
         public void Repainting()
@@ -158,6 +175,7 @@ namespace Salmon.Chess
                                 this.choose_unit.Location = new Point(x, y + 1);
                             }
                         }
+                        // 일반 공격
                         else
                         {
                             this.unit_matrix[x, y] = this.choose_unit!;
@@ -223,6 +241,10 @@ namespace Salmon.Chess
                 this.unit_matrix[x, 1] = new Pawn(this, new Point(x, 1), Team.Last);
                 this.unit_matrix[x, 6] = new Pawn(this, new Point(x, 6), Team.First);
             }
+            this.unit_matrix[0, 0] = new Rook(this, new Point(0, 0), Team.Last);
+            this.unit_matrix[7, 0] = new Rook(this, new Point(7, 0), Team.Last);
+            this.unit_matrix[0, 7] = new Rook(this, new Point(0, 7), Team.First);
+            this.unit_matrix[7, 7] = new Rook(this, new Point(7, 7), Team.First);
         }
     }
 }
