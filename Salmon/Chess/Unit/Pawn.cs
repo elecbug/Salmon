@@ -8,10 +8,11 @@ namespace Salmon.Chess
 {
     internal class Pawn : Unit
     {
-        public Pawn(FieldData game_board, Point location, Team team, bool is_alive = true)
-            : base(game_board, location, Type.Pawn, team, is_alive) { }
+        public Pawn(Point location, Team team, bool is_alive = true)
+            : base(location, Type.Pawn, team, is_alive) { }
+        public Pawn(Pawn target) : base(target) { }
 
-        public override List<Point> AbleToMove()
+        public override List<Point> AbleToMove(Unit?[,] unit_matrix)
         {
             List<Point> result = new List<Point>();
 
@@ -20,11 +21,11 @@ namespace Salmon.Chess
                 Point p1 = new Point(this.location.X, this.location.Y - 1);
                 Point p2 = new Point(this.location.X, this.location.Y - 2);
 
-                if (FieldData.IsInside(p1) && this.game_board.Unit(p1) == null)
+                if (FieldData.IsInside(p1) && unit_matrix[p1.X, p1.Y] == null)
                 {
                     result.Add(p1);
 
-                    if (FieldData.IsInside(p2) && this.game_board.Unit(p2) == null && this.move_count == 0)
+                    if (FieldData.IsInside(p2) && unit_matrix[p2.X, p2.Y] == null && this.move_count == 0)
                     {
                         result.Add(p2);
                     }
@@ -35,11 +36,11 @@ namespace Salmon.Chess
                 Point p1 = new Point(this.location.X, this.location.Y + 1);
                 Point p2 = new Point(this.location.X, this.location.Y + 2);
 
-                if (FieldData.IsInside(p1) && this.game_board.Unit(p1) == null)
+                if (FieldData.IsInside(p1) && unit_matrix[p1.X, p1.Y] == null)
                 {
                     result.Add(p1);
 
-                    if (FieldData.IsInside(p2) && this.game_board.Unit(p2) == null && this.move_count == 0)
+                    if (FieldData.IsInside(p2) && unit_matrix[p2.X, p2.Y] == null && this.move_count == 0)
                     {
                         result.Add(p2);
                     }
@@ -48,7 +49,7 @@ namespace Salmon.Chess
 
             return result;
         }
-        public override List<Point> AbleToAttack()
+        public override List<Point> AbleToAttack(Unit?[,] unit_matrix)
         {
             List<Point> result = new List<Point>();
 
@@ -57,13 +58,13 @@ namespace Salmon.Chess
                 Point p1 = new Point(this.location.X + 1, this.location.Y - 1);
                 Point p2 = new Point(this.location.X - 1, this.location.Y - 1);
 
-                if (FieldData.IsInside(p1) && this.game_board.Unit(p1) != null 
-                    && this.game_board.Unit(p1)!.Team != this.team)
+                if (FieldData.IsInside(p1) && unit_matrix[p1.X, p1.Y] != null
+                    && unit_matrix[p1.X, p1.Y]!.Team != this.team)
                 {
                     result.Add(p1);
                 }
-                if (FieldData.IsInside(p2) && this.game_board.Unit(p2) != null
-                    && this.game_board.Unit(p2)!.Team != this.team)
+                if (FieldData.IsInside(p2) && unit_matrix[p2.X, p2.Y] != null
+                    && unit_matrix[p2.X, p2.Y]!.Team != this.team)
                 {
                     result.Add(p2);
                 }
@@ -73,13 +74,13 @@ namespace Salmon.Chess
                 Point p1 = new Point(this.location.X + 1, this.location.Y + 1);
                 Point p2 = new Point(this.location.X - 1, this.location.Y + 1);
 
-                if (FieldData.IsInside(p1) && this.game_board.Unit(p1) != null
-                    && this.game_board.Unit(p1)!.Team != this.team)
+                if (FieldData.IsInside(p1) && unit_matrix[p1.X, p1.Y] != null
+                    && unit_matrix[p1.X, p1.Y]!.Team != this.team)
                 {
                     result.Add(p1);
                 }
-                if (FieldData.IsInside(p2) && this.game_board.Unit(p2) != null
-                    && this.game_board.Unit(p2)!.Team != this.team)
+                if (FieldData.IsInside(p2) && unit_matrix[p2.X, p2.Y] != null
+                    && unit_matrix[p2.X, p2.Y]!.Team != this.team)
                 {
                     result.Add(p2);
                 }
@@ -91,21 +92,26 @@ namespace Salmon.Chess
                 Point p1 = new Point(this.location.X + 1, this.location.Y);
                 Point p2 = new Point(this.location.X - 1, this.location.Y);
 
-                if (FieldData.IsInside(p1) && this.game_board.Unit(p1) != null
-                    && this.game_board.Unit(p1)!.Team != this.team && this.game_board.Unit(p1)!.Type == Type.Pawn
-                    && this.game_board.Unit(p1)!.MoveCount == 1)
+                if (FieldData.IsInside(p1) && unit_matrix[p1.X, p1.Y] != null
+                    && unit_matrix[p1.X, p1.Y]!.Team != this.team && unit_matrix[p1.X, p1.Y]!.Type == Type.Pawn
+                    && unit_matrix[p1.X, p1.Y]!.MoveCount == 1)
                 {
                     result.Add(p1);
                 }
-                if (FieldData.IsInside(p2) && this.game_board.Unit(p2) != null
-                    && this.game_board.Unit(p2)!.Team != this.team && this.game_board.Unit(p2)!.Type == Type.Pawn
-                    && this.game_board.Unit(p2)!.MoveCount == 1)
+                if (FieldData.IsInside(p2) && unit_matrix[p2.X, p2.Y] != null
+                    && unit_matrix[p2.X, p2.Y]!.Team != this.team && unit_matrix[p2.X, p2.Y]!.Type == Type.Pawn
+                    && unit_matrix[p2.X, p2.Y]!.MoveCount == 1)
                 {
                     result.Add(p2);
                 }
             }
 
             return result;
+        }
+
+        public override Pawn? Clone()
+        {
+            return new Pawn(this);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Salmon.Chess
 {
     internal interface IControl
     {
-        public abstract List<Point> AbleToMove();
-        public abstract List<Point> AbleToAttack();
+        public abstract List<Point> AbleToMove(Unit?[,] unit_matrix);
+        public abstract List<Point> AbleToAttack(Unit?[,] unit_matrix);
     }
 }

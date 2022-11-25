@@ -8,10 +8,11 @@ namespace Salmon.Chess
 {
     internal class Knight : Unit
     {
-        public Knight(FieldData game_board, Point location, Team team, bool is_alive = true)
-            : base(game_board, location, Type.Knight, team, is_alive) { }
+        public Knight(Point location, Team team, bool is_alive = true)
+            : base(location, Type.Knight, team, is_alive) { }
+        public Knight(Knight target) : base(target) { }
 
-        public override List<Point> AbleToMove()
+        public override List<Point> AbleToMove(Unit?[,] unit_matrix)
         {
             List<Point> result = new List<Point>();
 
@@ -28,7 +29,7 @@ namespace Salmon.Chess
             };
             for (int i = 0; i < p.Length; i++)
             {
-                if (FieldData.IsInside(p[i]) && this.game_board.Unit(p[i]) == null)
+                if (FieldData.IsInside(p[i]) && unit_matrix[p[i].X, p[i].Y] == null)
                 {
                     result.Add(p[i]);
                 }
@@ -36,7 +37,7 @@ namespace Salmon.Chess
 
             return result;
         }
-        public override List<Point> AbleToAttack()
+        public override List<Point> AbleToAttack(Unit?[,] unit_matrix)
         {
 
             List<Point> result = new List<Point>();
@@ -54,8 +55,8 @@ namespace Salmon.Chess
             };
             for (int i = 0; i < p.Length; i++)
             {
-                if (FieldData.IsInside(p[i]) && this.game_board.Unit(p[i]) != null
-                    && this.game_board.Unit(p[i])!.Team != this.team)
+                if (FieldData.IsInside(p[i]) && unit_matrix[p[i].X, p[i].Y] != null
+                    && unit_matrix[p[i].X, p[i].Y]!.Team != this.team)
                 {
                     result.Add(p[i]);
                 }
@@ -63,6 +64,11 @@ namespace Salmon.Chess
 
             return result;
 
+        }
+
+        public override Knight? Clone()
+        {
+            return new Knight(this);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Salmon.Chess
             this.manager = manager;
 
             this.Size = size;
-            this.field_data = new FieldData(manager, this);
+            this.field_data = manager.Data;
 
             this.color1 = new Paint(Color.Black);
             this.color2 = new Paint(Color.Ivory);
@@ -119,7 +119,7 @@ namespace Salmon.Chess
             }
 
         outside:
-            this.field_data.ClickUnit(x, y);
+            this.field_data.ControlUnit(x, y);
 
             Repainting();
         }
