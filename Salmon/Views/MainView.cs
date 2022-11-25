@@ -6,7 +6,7 @@ namespace Salmon.Views
         {
             InitializeComponent();
 
-            Chess.Field field = new Chess.Field(this.ClientSize)
+            Chess.FieldUI field = new Chess.FieldUI(this.ClientSize)
             {
                 Parent = this,
                 Visible = true,

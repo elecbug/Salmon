@@ -8,7 +8,7 @@ namespace Salmon.Chess
 {
     internal class Knight : Unit
     {
-        public Knight(Field game_board, Point location, Team team, bool is_alive = true)
+        public Knight(FieldData game_board, Point location, Team team, bool is_alive = true)
             : base(game_board, location, Type.Knight, team, is_alive) { }
 
         public override List<Point> AbleToMove()

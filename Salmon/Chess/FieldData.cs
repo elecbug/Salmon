@@ -3,110 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms.VisualStyles;
 
 namespace Salmon.Chess
 {
-    internal class Field : Panel
+    internal class FieldData
     {
-        private PictureBox[,] unit_image;
+        private FieldUI parent;
         private Unit?[,] unit_matrix;
         private Unit? choose_unit;
         private List<Point> attack_points;
         private List<Point> move_points;
-        private Paint color1, color2;
 
-        public Color Color1 { get => this.color1.Color; set => this.color1.Color = value; }
-        public Color Color2 { get => this.color2.Color; set => this.color2.Color = value; }
-
-        public Field(Size size) : base()
+        public FieldUI FieldUI { get => this.parent; set => this.parent = value; }
+        public Unit? Choosed => this.choose_unit;
+        public List<Point> AttackPoints => this.attack_points;
+        public List<Point> MovePoints => this.move_points;
+        public Unit? GetUnit(int x, int y)
         {
-            this.Size = size;
+            return this.unit_matrix[x, y];
+        }
 
-            this.color1 = new Paint(Color.Black);
-            this.color2 = new Paint(Color.Ivory);
+        public FieldData(FieldUI parent)
+        {
+            this.parent = parent;
 
             this.attack_points = new List<Point>();
             this.move_points = new List<Point>();
 
-            this.unit_image = new PictureBox[Board.MAXIMUM, Board.MAXIMUM];
             this.unit_matrix = new Unit[Board.MAXIMUM, Board.MAXIMUM];
             this.choose_unit = null;
 
-            for (int x = 0; x < Board.MAXIMUM; x++)
-            {
-                for (int y = 0; y < Board.MAXIMUM; y++)
-                {
-                    this.unit_image[x, y] = new PictureBox()
-                    {
-                        Parent = this,
-                        Visible = true,
-                        Size = new Size(this.Width / Board.MAXIMUM, this.Height / Board.MAXIMUM),
-                        Location = new Point(x * this.Width / Board.MAXIMUM, y * this.Height / Board.MAXIMUM),
-                        BorderStyle = BorderStyle.FixedSingle,
-                        BackgroundImageLayout = ImageLayout.Zoom,
-                    };
-
-                    this.unit_image[x, y].Click += ClickCell;
-                }
-            }
-
-            this.Resize += ResizeField;
-
             TestCase();
-            ResizeField(this, new EventArgs());
-            Repainting();
-        }
-
-        private void ResizeField(object? sender, EventArgs e)
-        {
-            for (int x = 0; x < Board.MAXIMUM; x++)
-            {
-                for (int y = 0; y < Board.MAXIMUM; y++)
-                {
-                    this.unit_image[x, y].Size
-                        = new Size(this.Width / Board.MAXIMUM, this.Height / Board.MAXIMUM);
-                    this.unit_image[x, y].Location
-                        = new Point(x * this.Width / Board.MAXIMUM, y * this.Height / Board.MAXIMUM);
-                }
-            }
-        }
-
-        public void Repainting()
-        {
-            for (int x = 0; x < Board.MAXIMUM; x++)
-            {
-                for (int y = 0; y < Board.MAXIMUM; y++)
-                {
-                    if (this.unit_matrix[x, y] != null)
-                    {
-                        this.unit_image[x, y].BackgroundImage = (this.unit_matrix[x, y]!.Team == Team.First
-                            ? this.color1.Painting(this.unit_matrix[x, y]!.Type)
-                            : this.color2.Painting(this.unit_matrix[x, y]!.Type));
-                    }
-                    else
-                    {
-                        this.unit_image[x, y].BackgroundImage = null;
-                    }
-                    if (this.attack_points.Contains(new Point(x, y)))
-                    {
-                        this.unit_image[x, y].BackColor = Color.Pink; 
-                    }
-                    else if (this.move_points.Contains(new Point(x, y)))
-                    {
-                        this.unit_image[x, y].BackColor = Color.LightGreen;    
-                    }
-                    else
-                    {
-                        this.unit_image[x, y].BackColor = (x + y) % 2 == 0 ? Color.LightGray : Color.DarkGray;
-                    } 
-                }
-            }
-            if (this.choose_unit != null)
-            {
-                this.unit_image[this.choose_unit.Location.X, this.choose_unit.Location.Y]!.BackColor
-                    = Color.LightBlue;
-            }
         }
 
         public Unit? Unit(Point point)
@@ -118,22 +45,8 @@ namespace Salmon.Chess
             return this.unit_matrix[x, y];
         }
 
-        public void ClickCell(object? sender, EventArgs e)
+        public void ClickUnit(int x, int y)
         {
-            int x = 0, y = 0;
-
-            for (x = 0; x < Board.MAXIMUM; x++)
-            {
-                for (y = 0; y < Board.MAXIMUM; y++)
-                {
-                    if (sender == this.unit_image[x, y])
-                    {
-                        goto outside;
-                    }
-                }
-            }
-
-        outside:
             // 최초 선택
             if (this.unit_matrix[x, y] != null && this.choose_unit == null)
             {
@@ -236,17 +149,34 @@ namespace Salmon.Chess
                 this.move_points = new List<Point>();
                 this.attack_points = new List<Point>();
             }
-
-            Repainting();
         }
 
+        private void MakeUnit(Point location, Type type, Team team)
+        {
+            switch (type)
+            {
+                case Type.Pawn:
+                    this.unit_matrix[location.X, location.Y] = new Pawn(this, location, team); break;
+                case Type.Rook:
+                    this.unit_matrix[location.X, location.Y] = new Rook(this, location, team); break;
+                case Type.Knight:
+                    this.unit_matrix[location.X, location.Y] = new Knight(this, location, team); break;
+                case Type.Bishop:
+                    this.unit_matrix[location.X, location.Y] = new Bishop(this, location, team); break;
+                case Type.Queen:
+                    this.unit_matrix[location.X, location.Y] = new Queen(this, location, team); break;
+                case Type.King: 
+                    this.unit_matrix[location.X, location.Y] = new King(this, location, team); break;
+            }
+        }
         private void TestCase()
         {
             for (int x = 0; x < 8; x++)
             {
-                this.unit_matrix[x, 1] = new Pawn(this, new Point(x, 1), Team.Last);
-                this.unit_matrix[x, 6] = new Pawn(this, new Point(x, 6), Team.First);
+                MakeUnit(new Point(x, 1), Type.Pawn, Team.Last);
+                MakeUnit(new Point(x, 6), Type.Pawn, Team.First);
             }
+
             this.unit_matrix[0, 0] = new Rook(this, new Point(0, 0), Team.Last);
             this.unit_matrix[7, 0] = new Rook(this, new Point(7, 0), Team.Last);
             this.unit_matrix[0, 7] = new Rook(this, new Point(0, 7), Team.First);
@@ -264,9 +194,9 @@ namespace Salmon.Chess
 
             this.unit_matrix[4, 0] = new Queen(this, new Point(4, 0), Team.Last);
             this.unit_matrix[4, 7] = new Queen(this, new Point(4, 7), Team.First);
+
+            this.unit_matrix[3, 0] = new King(this, new Point(3, 0), Team.Last);
+            this.unit_matrix[3, 7] = new King(this, new Point(3, 7), Team.First);
         }
     }
 }
-
-// 캐슬링(체크 탈출용은 안된다는 듯?), 프로모션, 체크, 체크메이트, 스테일메이트
-// 남은 유닛들 만들고 체크 & 스테일 검사 시스템 구축

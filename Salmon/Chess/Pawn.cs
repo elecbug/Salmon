@@ -8,7 +8,7 @@ namespace Salmon.Chess
 {
     internal class Pawn : Unit
     {
-        public Pawn(Field game_board, Point location, Team team, bool is_alive = true)
+        public Pawn(FieldData game_board, Point location, Team team, bool is_alive = true)
             : base(game_board, location, Type.Pawn, team, is_alive) { }
 
         public override List<Point> AbleToMove()

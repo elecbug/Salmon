@@ -8,20 +8,20 @@ namespace Salmon.Chess
 {
     internal abstract class Unit : IControl
     {
-        protected Field game_board;
+        protected FieldData game_board;
         protected Point location;
         protected Type type;
         protected Team team;
         protected bool is_alived;
         protected int move_count;
 
-        public Field GameBoard { get => this.game_board; }
+        public FieldData GameBoard { get => this.game_board; }
         public Point Location { get => this.location; set => this.location = value; }
         public Type Type { get => this.type; }
         public Team Team { get => this.team; }
         public int MoveCount { get => this.move_count; }
 
-        public Unit(Field game_board, Point location, Type type, Team team, bool is_alived = true)
+        public Unit(FieldData game_board, Point location, Type type, Team team, bool is_alived = true)
         {
             this.game_board = game_board;
             this.location = location;
