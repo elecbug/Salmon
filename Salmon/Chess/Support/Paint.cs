@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Salmon.Chess
 {
-    public class Paint
+    internal class Paint
     {
         private Color color;
         public Color Color { get => this.color; set { SetPaint(); this.color = value; } }

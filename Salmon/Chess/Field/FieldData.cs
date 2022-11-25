@@ -8,6 +8,12 @@ namespace Salmon.Chess
 {
     internal class FieldData
     {
+        public const int MINIMUM = 0, MAXIMUM = 8;
+        public static bool IsInside(Point point)
+            => point.X >= FieldData.MINIMUM && point.Y >= FieldData.MINIMUM
+            && point.X < FieldData.MAXIMUM && point.Y < FieldData.MAXIMUM;
+
+        private GameManager manager;
         private FieldUI parent;
         private Unit?[,] unit_matrix;
         private Unit? choose_unit;
@@ -18,19 +24,16 @@ namespace Salmon.Chess
         public Unit? Choosed => this.choose_unit;
         public List<Point> AttackPoints => this.attack_points;
         public List<Point> MovePoints => this.move_points;
-        public Unit? GetUnit(int x, int y)
-        {
-            return this.unit_matrix[x, y];
-        }
 
-        public FieldData(FieldUI parent)
+        public FieldData(GameManager manager, FieldUI parent)
         {
+            this.manager = manager;
             this.parent = parent;
 
             this.attack_points = new List<Point>();
             this.move_points = new List<Point>();
 
-            this.unit_matrix = new Unit[Board.MAXIMUM, Board.MAXIMUM];
+            this.unit_matrix = new Unit[FieldData.MAXIMUM, FieldData.MAXIMUM];
             this.choose_unit = null;
 
             TestCase();
@@ -47,10 +50,12 @@ namespace Salmon.Chess
 
         public void ClickUnit(int x, int y)
         {
+            ref Unit? ref_select = ref this.unit_matrix[x, y];
+
             // 최초 선택
-            if (this.unit_matrix[x, y] != null && this.choose_unit == null)
+            if (ref_select != null && this.choose_unit == null)
             {
-                this.choose_unit = this.unit_matrix[x, y];
+                this.choose_unit = ref_select;
 
                 this.attack_points = this.choose_unit!.AbleToAttack();
                 this.move_points = this.choose_unit!.AbleToMove();
@@ -63,14 +68,50 @@ namespace Salmon.Chess
                 this.move_points = new List<Point>();
                 this.attack_points = new List<Point>();
             }
-            else if (this.unit_matrix[x, y] != null && this.choose_unit != null)
+            else if (ref_select != null && this.choose_unit != null)
             {
+                // castling
+                if (this.choose_unit!.GetType() == typeof(King)
+                    && this.move_points.Contains(ref_select.Location))
+                {
+                    if (ref_select.Location.X < this.choose_unit.Location.X)
+                    {
+                        this.unit_matrix[this.choose_unit.Location.X, this.choose_unit.Location.Y] = null;
+                        this.unit_matrix[FieldData.MINIMUM + 1, this.choose_unit.Location.Y] = this.choose_unit;
+                        this.choose_unit!.IncreaseMove();
+                        this.choose_unit!.Location = new Point(FieldData.MINIMUM + 1, this.choose_unit.Location.Y);
+
+                        Unit select = ref_select!;
+
+                        this.unit_matrix[ref_select.Location.X, ref_select.Location.Y] = null;
+                        this.unit_matrix[FieldData.MINIMUM + 2, select.Location.Y] = select;
+                        select.IncreaseMove();
+                        select.Location = new Point(FieldData.MINIMUM + 2, this.choose_unit.Location.Y);
+                    }
+                    else if (ref_select.Location.X > this.choose_unit.Location.X)
+                    {
+                        this.unit_matrix[this.choose_unit.Location.X, this.choose_unit.Location.Y] = null;
+                        this.unit_matrix[FieldData.MAXIMUM - 4, this.choose_unit.Location.Y] = this.choose_unit;
+                        this.choose_unit!.IncreaseMove();
+                        this.choose_unit!.Location = new Point(FieldData.MAXIMUM - 4, this.choose_unit.Location.Y);
+
+                        Unit select = ref_select!;
+
+                        this.unit_matrix[ref_select.Location.X, ref_select.Location.Y] = null;
+                        this.unit_matrix[FieldData.MAXIMUM - 3, select.Location.Y] = select;
+                        select.IncreaseMove();
+                        select.Location = new Point(FieldData.MAXIMUM - 3, select.Location.Y);
+                    }
+
+                    this.move_points = new List<Point>();
+                    this.attack_points = new List<Point>();
+                }
                 // 공격 시도
-                if (this.unit_matrix[x, y]!.Team != this.choose_unit!.Team)
+                else if (ref_select!.Team != this.choose_unit!.Team)
                 {
                     if (this.attack_points.Contains(new Point(x, y)))
                     {
-                        this.unit_matrix[x, y]!.Kill();
+                        ref_select!.Kill();
 
                         // en passant!
                         if (this.choose_unit.GetType() == typeof(Pawn) && this.choose_unit.Location.Y == y
@@ -80,7 +121,7 @@ namespace Salmon.Chess
                             if (this.choose_unit.Team == Team.First)
                             {
                                 this.unit_matrix[x, y - 1] = this.choose_unit!;
-                                this.unit_matrix[x, y] = null;
+                                ref_select = null;
                                 this.unit_matrix[this.choose_unit.Location.X, this.choose_unit.Location.Y] = null;
 
                                 this.choose_unit.Location = new Point(x, y - 1);
@@ -88,7 +129,7 @@ namespace Salmon.Chess
                             else if (this.choose_unit.Team == Team.Last)
                             {
                                 this.unit_matrix[x, y + 1] = this.choose_unit!;
-                                this.unit_matrix[x, y] = null;
+                                ref_select = null;
                                 this.unit_matrix[this.choose_unit.Location.X, this.choose_unit.Location.Y] = null;
 
                                 this.choose_unit.Location = new Point(x, y + 1);
@@ -97,7 +138,7 @@ namespace Salmon.Chess
                         // 일반 공격
                         else
                         {
-                            this.unit_matrix[x, y] = this.choose_unit!;
+                            ref_select = this.choose_unit!;
                             this.unit_matrix[this.choose_unit.Location.X, this.choose_unit.Location.Y] = null;
 
                             this.choose_unit.Location = new Point(x, y);
@@ -119,19 +160,19 @@ namespace Salmon.Chess
                     }
                 }
                 // 선택 변경
-                else if (this.unit_matrix[x, y]!.Team == this.choose_unit!.Team)
+                else if (ref_select!.Team == this.choose_unit!.Team)
                 {
-                    this.choose_unit = this.unit_matrix[x, y];
+                    this.choose_unit = ref_select;
 
                     this.attack_points = this.choose_unit!.AbleToAttack();
                     this.move_points = this.choose_unit!.AbleToMove();
                 }
             }
             // 이동 시도
-            else if (this.unit_matrix[x, y] == null && this.choose_unit != null
+            else if (ref_select == null && this.choose_unit != null
                 && this.move_points.Contains(new Point(x, y)))
             {
-                this.unit_matrix[x, y] = this.choose_unit;
+                ref_select = this.choose_unit;
                 this.unit_matrix[this.choose_unit.Location.X, this.choose_unit.Location.Y] = null;
                 this.choose_unit!.Location = new Point(x, y);
 

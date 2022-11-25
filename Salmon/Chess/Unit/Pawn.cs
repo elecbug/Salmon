@@ -20,11 +20,11 @@ namespace Salmon.Chess
                 Point p1 = new Point(this.location.X, this.location.Y - 1);
                 Point p2 = new Point(this.location.X, this.location.Y - 2);
 
-                if (Board.IsInside(p1) && this.game_board.Unit(p1) == null)
+                if (FieldData.IsInside(p1) && this.game_board.Unit(p1) == null)
                 {
                     result.Add(p1);
 
-                    if (Board.IsInside(p2) && this.game_board.Unit(p2) == null && this.move_count == 0)
+                    if (FieldData.IsInside(p2) && this.game_board.Unit(p2) == null && this.move_count == 0)
                     {
                         result.Add(p2);
                     }
@@ -35,11 +35,11 @@ namespace Salmon.Chess
                 Point p1 = new Point(this.location.X, this.location.Y + 1);
                 Point p2 = new Point(this.location.X, this.location.Y + 2);
 
-                if (Board.IsInside(p1) && this.game_board.Unit(p1) == null)
+                if (FieldData.IsInside(p1) && this.game_board.Unit(p1) == null)
                 {
                     result.Add(p1);
 
-                    if (Board.IsInside(p2) && this.game_board.Unit(p2) == null && this.move_count == 0)
+                    if (FieldData.IsInside(p2) && this.game_board.Unit(p2) == null && this.move_count == 0)
                     {
                         result.Add(p2);
                     }
@@ -57,12 +57,12 @@ namespace Salmon.Chess
                 Point p1 = new Point(this.location.X + 1, this.location.Y - 1);
                 Point p2 = new Point(this.location.X - 1, this.location.Y - 1);
 
-                if (Board.IsInside(p1) && this.game_board.Unit(p1) != null 
+                if (FieldData.IsInside(p1) && this.game_board.Unit(p1) != null 
                     && this.game_board.Unit(p1)!.Team != this.team)
                 {
                     result.Add(p1);
                 }
-                if (Board.IsInside(p2) && this.game_board.Unit(p2) != null
+                if (FieldData.IsInside(p2) && this.game_board.Unit(p2) != null
                     && this.game_board.Unit(p2)!.Team != this.team)
                 {
                     result.Add(p2);
@@ -73,12 +73,12 @@ namespace Salmon.Chess
                 Point p1 = new Point(this.location.X + 1, this.location.Y + 1);
                 Point p2 = new Point(this.location.X - 1, this.location.Y + 1);
 
-                if (Board.IsInside(p1) && this.game_board.Unit(p1) != null
+                if (FieldData.IsInside(p1) && this.game_board.Unit(p1) != null
                     && this.game_board.Unit(p1)!.Team != this.team)
                 {
                     result.Add(p1);
                 }
-                if (Board.IsInside(p2) && this.game_board.Unit(p2) != null
+                if (FieldData.IsInside(p2) && this.game_board.Unit(p2) != null
                     && this.game_board.Unit(p2)!.Team != this.team)
                 {
                     result.Add(p2);
@@ -86,18 +86,18 @@ namespace Salmon.Chess
             }
 
             // En Passant
-            if (this.location.Y == Board.MINIMUM + 3 || this.location.Y == Board.MAXIMUM - 4)
+            if (this.location.Y == FieldData.MINIMUM + 3 || this.location.Y == FieldData.MAXIMUM - 4)
             {
                 Point p1 = new Point(this.location.X + 1, this.location.Y);
                 Point p2 = new Point(this.location.X - 1, this.location.Y);
 
-                if (Board.IsInside(p1) && this.game_board.Unit(p1) != null
+                if (FieldData.IsInside(p1) && this.game_board.Unit(p1) != null
                     && this.game_board.Unit(p1)!.Team != this.team && this.game_board.Unit(p1)!.Type == Type.Pawn
                     && this.game_board.Unit(p1)!.MoveCount == 1)
                 {
                     result.Add(p1);
                 }
-                if (Board.IsInside(p2) && this.game_board.Unit(p2) != null
+                if (FieldData.IsInside(p2) && this.game_board.Unit(p2) != null
                     && this.game_board.Unit(p2)!.Team != this.team && this.game_board.Unit(p2)!.Type == Type.Pawn
                     && this.game_board.Unit(p2)!.MoveCount == 1)
                 {

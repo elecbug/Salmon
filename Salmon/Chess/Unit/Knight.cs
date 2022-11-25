@@ -28,7 +28,7 @@ namespace Salmon.Chess
             };
             for (int i = 0; i < p.Length; i++)
             {
-                if (Board.IsInside(p[i]) && this.game_board.Unit(p[i]) == null)
+                if (FieldData.IsInside(p[i]) && this.game_board.Unit(p[i]) == null)
                 {
                     result.Add(p[i]);
                 }
@@ -54,7 +54,7 @@ namespace Salmon.Chess
             };
             for (int i = 0; i < p.Length; i++)
             {
-                if (Board.IsInside(p[i]) && this.game_board.Unit(p[i]) != null
+                if (FieldData.IsInside(p[i]) && this.game_board.Unit(p[i]) != null
                     && this.game_board.Unit(p[i])!.Team != this.team)
                 {
                     result.Add(p[i]);
