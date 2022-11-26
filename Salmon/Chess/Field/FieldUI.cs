@@ -20,6 +20,7 @@ namespace Salmon.Chess
         public FieldUI(GameManager manager, Size size) : base()
         {
             this.manager = manager;
+            this.BackColor = Color.Black;
 
             this.Size = size;
             this.field_data = manager.Data;
