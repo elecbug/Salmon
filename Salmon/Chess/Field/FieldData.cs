@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Salmon.Properties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -20,6 +21,7 @@ namespace Salmon.Chess
         private Unit? choose_unit;
         private List<Point> attack_points;
         private List<Point> move_points;
+        private King? first_king, last_king;
 
         public Unit? Choosed => this.choose_unit;
         public List<Point> AttackPoints => this.attack_points;
@@ -36,7 +38,28 @@ namespace Salmon.Chess
             this.choose_unit = null;
 
             DefaultCase();
-            //TestCase();
+            // TestCase();
+        }
+        public FieldData(FieldData target)
+        {
+            this.manager = target.manager;
+            this.unit_matrix = new Unit?[FieldData.MAXIMUM, FieldData.MAXIMUM];
+            for (int x = FieldData.MINIMUM; x < FieldData.MAXIMUM; x++)
+            {
+                for (int y = FieldData.MINIMUM; y < FieldData.MAXIMUM; y++)
+                {
+                    this.unit_matrix[x, y] = target.unit_matrix[x, y]?.Clone();
+                }
+            }
+            if (target.choose_unit != null)
+            {
+                this.choose_unit 
+                    = target.unit_matrix[target.choose_unit!.Location.X, target.choose_unit!.Location.Y];
+            }
+            this.attack_points = new List<Point>(target.attack_points);
+            this.move_points = new List<Point>(target.move_points);
+            this.first_king = this.unit_matrix[target.first_king!.Location.X, target.first_king!.Location.Y] as King;
+            this.last_king = this.unit_matrix[target.last_king!.Location.X, target.last_king!.Location.Y] as King;
         }
 
         public Unit? Unit(Point point)
@@ -48,7 +71,7 @@ namespace Salmon.Chess
             return this.unit_matrix[x, y];
         }
 
-        public void ControlUnit(int x, int y)
+        public void ControlUnit(int x, int y, bool in_check = false)
         {
             bool used_turn = false;
             ref Unit? ref_select = ref this.unit_matrix[x, y];
@@ -71,6 +94,13 @@ namespace Salmon.Chess
                     if (this.choose_unit!.GetType() == typeof(King)
                         && this.move_points.Contains(ref_select.Location))
                     {
+                        foreach (Unit? unit in this.unit_matrix)
+                        {
+                            if (unit != null && this.manager.Turn == IsChecked(this, unit!, this.choose_unit.Location))
+                            {
+                                return;
+                            }
+                        }
                         if (ref_select.Location.X < this.choose_unit.Location.X)
                         {
                             this.unit_matrix[this.choose_unit.Location.X, this.choose_unit.Location.Y] = null;
@@ -173,7 +203,7 @@ namespace Salmon.Chess
 
                             for (int i = 0; i < this.move_points.Count; i++)
                             {
-                                if (IsChecked(this.move_points[i]) == this.manager.Turn)
+                                if (!in_check && IsChecked(this, this.choose_unit, this.move_points[i]) == this.manager.Turn)
                                 {
                                     this.move_points.RemoveAt(i);
                                     i--;
@@ -181,7 +211,7 @@ namespace Salmon.Chess
                             }
                             for (int i = 0; i < this.attack_points.Count; i++)
                             {
-                                if (IsChecked(this.attack_points[i]) == this.manager.Turn)
+                                if (!in_check && IsChecked(this, this.choose_unit, this.attack_points[i]) == this.manager.Turn)
                                 {
                                     this.attack_points.RemoveAt(i);
                                     i--;
@@ -220,7 +250,7 @@ namespace Salmon.Chess
 
                     for (int i = 0; i < this.move_points.Count; i++)
                     {
-                        if (IsChecked(this.move_points[i]) == this.manager.Turn)
+                        if (!in_check && IsChecked(this, this.choose_unit, this.move_points[i]) == this.manager.Turn)
                         {
                             this.move_points.RemoveAt(i);
                             i--;
@@ -228,7 +258,7 @@ namespace Salmon.Chess
                     }
                     for (int i = 0; i < this.attack_points.Count; i++)
                     {
-                        if (IsChecked(this.attack_points[i]) == this.manager.Turn)
+                        if (!in_check && IsChecked(this, this.choose_unit, this.attack_points[i]) == this.manager.Turn)
                         {
                             this.attack_points.RemoveAt(i);
                             i--;
@@ -251,7 +281,10 @@ namespace Salmon.Chess
                 this.move_points = new List<Point>();
                 this.attack_points = new List<Point>();
 
-                this.manager.ChangeTurn();
+                if (!in_check)
+                {
+                    this.manager.ChangeTurn();
+                }
             }
         }
 
@@ -270,7 +303,10 @@ namespace Salmon.Chess
                 case Type.Queen:
                     this.unit_matrix[location.X, location.Y] = new Queen(location, team); break;
                 case Type.King:
-                    this.unit_matrix[location.X, location.Y] = new King(location, team); break;
+                    this.unit_matrix[location.X, location.Y] = new King(location, team);
+                    if (team == Team.First) { this.first_king = this.unit_matrix[location.X, location.Y] as King; }
+                    else if (team == Team.Last) { this.last_king = this.unit_matrix[location.X, location.Y] as King; }
+                    break;
             }
         }
         private void DefaultCase()
@@ -299,8 +335,8 @@ namespace Salmon.Chess
             this.unit_matrix[4, 0] = new Queen(new Point(4, 0), Team.Last);
             this.unit_matrix[4, 7] = new Queen(new Point(4, 7), Team.First);
 
-            this.unit_matrix[3, 0] = new King(new Point(3, 0), Team.Last);
-            this.unit_matrix[3, 7] = new King(new Point(3, 7), Team.First);
+            this.unit_matrix[3, 0] = this.last_king = new King(new Point(3, 0), Team.Last);
+            this.unit_matrix[3, 7] = this.first_king = new King(new Point(3, 7), Team.First);
         }
         private void TestCase()
         {
@@ -310,48 +346,28 @@ namespace Salmon.Chess
             MakeUnit(new Point(2, 7), Type.Rook, Team.First);
         }
 
-        private Team IsChecked(Point point)
+        private Team IsChecked(FieldData target, Unit unit, Point point)
         {
-            Unit?[,] futures = new Unit?[FieldData.MAXIMUM, FieldData.MAXIMUM];
-            King? first_king = null, last_king = null;
+            FieldData futures = new FieldData(target);
+            futures.choose_unit = futures.unit_matrix[unit.Location.X, unit.Location.Y];
+            futures.move_points = futures.choose_unit!.AbleToMove(futures.unit_matrix);
+            futures.attack_points = futures.choose_unit!.AbleToAttack(futures.unit_matrix);
+
+            futures.ControlUnit(point.X, point.Y, true);
 
             for (int x = FieldData.MINIMUM; x < FieldData.MAXIMUM; x++)
             {
                 for (int y = FieldData.MINIMUM; y < FieldData.MAXIMUM; y++)
                 {
-                    futures[x, y] = this.unit_matrix[x, y]?.Clone();
-
-                    if (futures[x, y] != null && futures[x, y]!.GetType() == typeof(King))
+                    if (futures.unit_matrix[x, y] != null && futures.unit_matrix[x, y]!.Team != this.manager.Turn)
                     {
-                        if (futures[x, y]!.Team == Team.First)
-                        {
-                            first_king = (King)futures[x, y]!;
-                        }
-                        else if (futures[x, y]!.Team == Team.Last)
-                        {
-                            last_king = (King)futures[x, y]!;
-                        }
-                    }
-                }
-            }
+                        List<Point> points = futures.unit_matrix[x, y]!.AbleToAttack(futures.unit_matrix);
 
-            futures[point.X, point.Y] = futures[this.choose_unit!.Location.X, this.choose_unit!.Location.Y];
-            futures[this.choose_unit!.Location.X, this.choose_unit!.Location.Y] = null;
-            futures[point.X, point.Y]!.Location = point;
-
-            for (int x = FieldData.MINIMUM; x < FieldData.MAXIMUM; x++)
-            {
-                for (int y = FieldData.MINIMUM; y < FieldData.MAXIMUM; y++)
-                {
-                    if (futures[x, y] != null && futures[x, y]!.Team != this.manager.Turn)
-                    {
-                        List<Point> points = futures[x, y]!.AbleToAttack(futures);
-
-                        if (points.Contains(last_king!.Location))
+                        if (points.Contains(futures.last_king!.Location))
                         {
                             return Team.Last;
                         }
-                        else if (points.Contains(first_king!.Location))
+                        else if (points.Contains(futures.first_king!.Location))
                         {
                             return Team.First;
                         }
@@ -364,27 +380,28 @@ namespace Salmon.Chess
 
         public GameState IsMated()
         {
+            Unit? unit = null;
             King? king = null;
             for (int x = FieldData.MINIMUM; x < FieldData.MAXIMUM; x++)
             {
                 for (int y = FieldData.MINIMUM; y < FieldData.MAXIMUM; y++)
                 {
-                    if (this.unit_matrix[x,y] != null && this.unit_matrix[x,y]!.GetType() == typeof(King)
-                        && this.unit_matrix[x,y]!.Team == this.manager.Turn)
+                    if (this.unit_matrix[x, y] != null && this.unit_matrix[x, y]!.GetType() == typeof(King)
+                        && this.unit_matrix[x, y]!.Team == this.manager.Turn)
                     {
                         king = (King)this.unit_matrix[x, y]!;
                     }
 
                     if (this.unit_matrix[x, y] != null && this.unit_matrix[x, y]!.Team == this.manager.Turn)
                     {
-                        this.choose_unit = this.unit_matrix[x, y];
+                        unit = this.unit_matrix[x, y];
 
                         List<Point> attack_points = this.unit_matrix[x, y]!.AbleToAttack(this.unit_matrix);
                         List<Point> move_points = this.unit_matrix[x, y]!.AbleToMove(this.unit_matrix);
 
                         for (int i = 0; i < move_points.Count; i++)
                         {
-                            if (IsChecked(move_points[i]) == this.manager.Turn)
+                            if (IsChecked(this, unit!, move_points[i]) == this.manager.Turn)
                             {
                                 move_points.RemoveAt(i);
                                 i--;
@@ -392,17 +409,17 @@ namespace Salmon.Chess
                         }
                         for (int i = 0; i < attack_points.Count; i++)
                         {
-                            if (IsChecked(attack_points[i]) == this.manager.Turn)
+                            if (IsChecked(this, unit!, attack_points[i]) == this.manager.Turn)
                             {
                                 attack_points.RemoveAt(i);
                                 i--;
                             }
                         }
 
-                        if (attack_points.Count + move_points.Count != 0) 
+                        if (attack_points.Count + move_points.Count != 0)
                         {
-                            this.choose_unit = null;
-                            return GameState.NA; 
+                            unit = null;
+                            return GameState.NA;
                         }
                     }
                 }
@@ -418,7 +435,7 @@ namespace Salmon.Chess
 
                         if (points.Contains(king!.Location))
                         {
-                            this.choose_unit = null;
+                            unit = null;
                             switch (this.manager.Turn)
                             {
                                 case Team.First: return GameState.LastWin;
@@ -429,7 +446,7 @@ namespace Salmon.Chess
                 }
             }
 
-            this.choose_unit = null;
+            unit = null;
             return GameState.Draw;
         }
     }
