@@ -33,12 +33,12 @@ namespace Salmon.Chess
         public void ChangeTurn()
         {
             this.turn = (this.turn == Team.First ? Team.Last : Team.First);
-            
+
             switch (this.back.IsMated())
             {
-                case GameState.FirstWin: MessageBox.Show("First Win!"); break;
-                case GameState.LastWin: MessageBox.Show("Last Win!"); break;
-                case GameState.Draw: MessageBox.Show("Draw..."); break;
+                case GameState.FirstWin: new Thread(() => { MessageBox.Show("First Win!"); }).Start(); break;
+                case GameState.LastWin: new Thread(() => { MessageBox.Show("Last Win!"); }).Start(); break;
+                case GameState.Draw: new Thread(() => { MessageBox.Show("Draw..."); }).Start(); break;
             }
         }
     }

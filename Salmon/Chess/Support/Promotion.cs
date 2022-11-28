@@ -49,6 +49,7 @@ namespace Salmon.Chess
             form.Controls.AddRange(new Control[] { label, button_1, button_2, button_3, button_4 });
 
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
+            form.ControlBox = false;
             form.StartPosition = FormStartPosition.CenterScreen;
             form.MinimizeBox = false;
             form.MaximizeBox = false;
