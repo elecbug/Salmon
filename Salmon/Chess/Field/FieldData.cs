@@ -1,6 +1,7 @@
 ﻿using Salmon.Properties;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -38,7 +39,7 @@ namespace Salmon.Chess
             this.choose_unit = null;
 
             DefaultCase();
-            // TestCase();
+            //TestCase();
         }
         public FieldData(FieldData target)
         {
@@ -173,6 +174,11 @@ namespace Salmon.Chess
 
                                 this.choose_unit.Location = new Point(x, y);
                             }
+                            if (!in_check && this.choose_unit!.GetType() == typeof(Pawn)
+                                && (this.choose_unit!.Location.Y == FieldData.MINIMUM || this.choose_unit!.Location.Y == FieldData.MAXIMUM - 1))
+                            {
+                                Promotion(this.choose_unit);
+                            }
 
                             this.choose_unit!.IncreaseMove();
                             this.choose_unit = null;
@@ -228,6 +234,12 @@ namespace Salmon.Chess
 
                     this.unit_matrix[this.choose_unit.Location.X, this.choose_unit.Location.Y] = null;
                     this.choose_unit!.Location = new Point(x, y);
+
+                    if (!in_check && this.choose_unit!.GetType() == typeof(Pawn)
+                        && (this.choose_unit!.Location.Y == FieldData.MINIMUM || this.choose_unit!.Location.Y == FieldData.MAXIMUM - 1))
+                    {
+                        Promotion(this.choose_unit);
+                    }
 
                     this.choose_unit!.IncreaseMove();
                     this.choose_unit = null;
@@ -288,6 +300,40 @@ namespace Salmon.Chess
             }
         }
 
+        private void Promotion(Unit choose_unit)
+        {
+            Type what = Chess.Promotion.DialogBox("Promotion", "What do you want?");
+            
+            switch (what)
+            {
+                case Type.Queen:
+                    this.unit_matrix[choose_unit.Location.X, choose_unit.Location.Y]
+                        = new Queen(new Point(choose_unit.Location.X, choose_unit.Location.Y), choose_unit.Team);
+                    this.choose_unit = this.unit_matrix[choose_unit.Location.X, choose_unit.Location.Y];
+                    this.choose_unit!.IncreaseMove();
+                    break;
+                case Type.Knight:
+                    this.unit_matrix[choose_unit.Location.X, choose_unit.Location.Y]
+                        = new Knight(new Point(choose_unit.Location.X, choose_unit.Location.Y), choose_unit.Team);
+                    this.choose_unit = this.unit_matrix[choose_unit.Location.X, choose_unit.Location.Y];
+                    this.choose_unit!.IncreaseMove();
+                    break;
+                case Type.Rook:
+                    this.unit_matrix[choose_unit.Location.X, choose_unit.Location.Y]
+                        = new Rook(new Point(choose_unit.Location.X, choose_unit.Location.Y), choose_unit.Team);
+                    this.choose_unit = this.unit_matrix[choose_unit.Location.X, choose_unit.Location.Y];
+                    this.choose_unit!.IncreaseMove();
+                    break;
+                case Type.Bishop:
+                    this.unit_matrix[choose_unit.Location.X, choose_unit.Location.Y]
+                        = new Bishop(new Point(choose_unit.Location.X, choose_unit.Location.Y), choose_unit.Team);
+                    this.choose_unit = this.unit_matrix[choose_unit.Location.X, choose_unit.Location.Y];
+                    this.choose_unit!.IncreaseMove();
+                    break;
+            }
+
+        }
+
         private void MakeUnit(Point location, Type type, Team team)
         {
             switch (type)
@@ -340,10 +386,11 @@ namespace Salmon.Chess
         }
         private void TestCase()
         {
-            MakeUnit(new Point(0, 0), Type.King, Team.Last);
+            MakeUnit(new Point(0, 1), Type.King, Team.Last);
             MakeUnit(new Point(7, 7), Type.King, Team.First);
             MakeUnit(new Point(1, 7), Type.Rook, Team.First);
             MakeUnit(new Point(2, 7), Type.Rook, Team.First);
+            MakeUnit(new Point(7, 1), Type.Pawn, Team.First);
         }
 
         private Team IsChecked(FieldData target, Unit unit, Point point)
