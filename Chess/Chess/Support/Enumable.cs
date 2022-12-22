@@ -1,4 +1,4 @@
-﻿namespace Salmon.Chess
+﻿namespace Chess
 {
     internal enum Type { Pawn, Rook, Knight, Bishop, King, Queen }
     internal enum Team { NA, First, Last }

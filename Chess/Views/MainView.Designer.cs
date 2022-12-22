@@ -1,4 +1,4 @@
-﻿namespace Salmon.Views
+﻿namespace Views
 {
     partial class MainView
     {

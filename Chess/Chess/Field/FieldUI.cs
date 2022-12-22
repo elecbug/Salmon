@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms.VisualStyles;
 
-namespace Salmon.Chess
+namespace Chess
 {
     internal class FieldUI : Panel
     {

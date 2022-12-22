@@ -1,5 +1,4 @@
-﻿using Salmon.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms.VisualStyles;
 
-namespace Salmon.Chess
+namespace Chess
 {
     internal class FieldData
     {

@@ -1,4 +1,4 @@
-namespace Salmon.Views
+namespace Views
 {
     public partial class MainView : Form
     {
