@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Socket\Socket.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Command\Token.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

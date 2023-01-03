@@ -5,7 +5,11 @@ VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chess", "Chess\Chess.csproj", "{20E4C0D9-DA9E-4517-9719-1A957CCCCDC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CutlassS", "CutlassS\CutlassS.csproj", "{5E34F410-9A07-4A21-BEBA-62CB9E24EF1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CutlassS", "CutlassS\CutlassS.csproj", "{5E34F410-9A07-4A21-BEBA-62CB9E24EF1E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Socket", "Socket\Socket.csproj", "{B84D2069-761F-426B-9298-66F80CF37864}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CutlassC", "CutlassC\CutlassC.csproj", "{75E91BD1-81E8-4447-A67B-FDBF952A0660}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{5E34F410-9A07-4A21-BEBA-62CB9E24EF1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E34F410-9A07-4A21-BEBA-62CB9E24EF1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E34F410-9A07-4A21-BEBA-62CB9E24EF1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B84D2069-761F-426B-9298-66F80CF37864}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B84D2069-761F-426B-9298-66F80CF37864}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B84D2069-761F-426B-9298-66F80CF37864}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B84D2069-761F-426B-9298-66F80CF37864}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75E91BD1-81E8-4447-A67B-FDBF952A0660}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75E91BD1-81E8-4447-A67B-FDBF952A0660}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75E91BD1-81E8-4447-A67B-FDBF952A0660}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75E91BD1-81E8-4447-A67B-FDBF952A0660}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
