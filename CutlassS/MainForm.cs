@@ -10,6 +10,7 @@ namespace CutlassS
         public MainForm()
         {
             InitializeComponent();
+
             this.Text = "Cutlass Server Main";
             this.ClientSize = new Size(800, 600);
             this.Visible = true;
@@ -52,6 +53,8 @@ namespace CutlassS
             this.write_box.KeyPress += PressWriteBox;
 
             this.manager = Command.Manager.Instance();
+
+            this.write_box.Focus();
         }
 
         private void PressWriteBox(object? sender, KeyPressEventArgs e)

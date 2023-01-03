@@ -5,9 +5,9 @@ namespace CutlassS.Socket
 {
     public class Client
     {
-        private StreamReader reader;
-        private StreamWriter writer;
-        private Thread thread;
+        private StreamReader? reader;
+        private StreamWriter? writer;
+        private Thread? thread;
         private bool run;
 
         public string Name { get; private set; }
@@ -39,35 +39,52 @@ namespace CutlassS.Socket
 
         private async void RunRead()
         {
-            while (this.run)
+            try
             {
-                string? line = "";
-
-                while (line.Equals(""))
+                while (this.run)
                 {
-                    line = await this.reader.ReadLineAsync();
-                    
-                    if (line == null)
-                    {
-                        Debug.WriteLine("Cut accessed to server");
-                        return;
-                    }
-                }
+                    string? line = "";
 
-                Debug.WriteLine(this.Name + " is get " + line);
+                    while (line.Equals(""))
+                    {
+                        line = await this.reader!.ReadLineAsync();
+
+                        if (line == null)
+                        {
+                            Debug.WriteLine("Cut accessed to server");
+                            return;
+                        }
+                    }
+
+                    Debug.WriteLine(this.Name + " is get " + line);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
             }
         }
 
         public void Send(string message)
         {
-            this.writer.WriteLine(this.Name + ">" + message);
-            this.writer.Flush();
+            try
+            {
+                this.writer!.WriteLine(this.Name + ">" + message);
+                this.writer!.Flush();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
         }
 
         public void Stop()
         {
-            Debug.WriteLine("stop client");
-            this.run = false;
+            lock (this)
+            {
+                Debug.WriteLine("stop client");
+                this.run = false;
+            }
         }
     }
 }

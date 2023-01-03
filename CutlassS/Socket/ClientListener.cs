@@ -53,7 +53,10 @@ namespace CutlassS.Socket
         public void Stop()
         {
             Debug.WriteLine("stop listener");
-            this.run = false;
+            lock (this)
+            {
+                this.run = false;
+            }
         }
     }
 }

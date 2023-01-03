@@ -8,8 +8,8 @@ namespace CutlassS.Socket
     {
         public List<ClientListener> Clients { get; private set; }
 
-        private Thread thread;
-        private TcpListener tcp_listener;
+        private Thread? thread;
+        private TcpListener? tcp_listener;
         private static Server result = new Server();
         private bool run;
 
@@ -18,50 +18,68 @@ namespace CutlassS.Socket
             return Server.result;
         }
 
-        private Server(string address = "127.0.0.1", int port = 9764)
+        private Server()
         {
             this.Clients = new List<ClientListener>();
-            this.thread = new Thread(new ThreadStart(delegate { Run(address, port); }));
-            this.run = true;
-            this.tcp_listener = new TcpListener(IPAddress.Parse(address), port);
         }
 
-        public void Run()
+        public void Run(string address = "127.0.0.1", int port = 9764)
         {
+            this.thread = new Thread(new ThreadStart(delegate { InRun(address, port); }));
+            this.run = true;
+            this.tcp_listener = new TcpListener(IPAddress.Parse(address), port);
+
             this.thread.Start();
         }
 
-        private void Run(string address, int port)
+        private void InRun(string address, int port)
         {
-            this.tcp_listener.Start();
-
-            while (this.run)
+            try
             {
-                if (this.tcp_listener.Pending())
+                this.tcp_listener!.Start();
+
+                while (this.run)
                 {
-                    System.Net.Sockets.Socket client = this.tcp_listener.AcceptSocket();
-                    IPEndPoint ip = (IPEndPoint)client.RemoteEndPoint!;
+                    if (this.tcp_listener.Pending())
+                    {
+                        System.Net.Sockets.Socket client = this.tcp_listener.AcceptSocket();
+                        IPEndPoint ip = (IPEndPoint)client.RemoteEndPoint!;
 
-                    Debug.WriteLine("Access by adress {0}", ip);
+                        Debug.WriteLine("Access by adress {0}", ip);
 
-                    ClientListener client_thread = new ClientListener(client);
-                    this.Clients.Add(client_thread);
+                        ClientListener client_thread = new ClientListener(client);
+                        this.Clients.Add(client_thread);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
             }
         }
 
         public void Stop()
         {
-            this.run = false;
-
-            for (int i = 0; i < this.Clients.Count; i++)
+            lock (this)
             {
-                this.Clients[i].Stop();
+                try
+                {
+                    this.run = false;
+
+                    for (int i = 0; i < this.Clients.Count; i++)
+                    {
+                        this.Clients[i].Stop();
+                    }
+
+                    Debug.WriteLine("stop server");
+
+                    this.tcp_listener!.Stop();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
             }
-
-            Debug.WriteLine("stop server");
-
-            this.tcp_listener.Stop();
         }
     }
 }

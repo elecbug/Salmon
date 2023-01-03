@@ -86,5 +86,14 @@ namespace CutlassS.Command {
                 return ResourceManager.GetString("Stop", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to test.
+        /// </summary>
+        public static string Test {
+            get {
+                return ResourceManager.GetString("Test", resourceCulture);
+            }
+        }
     }
 }
