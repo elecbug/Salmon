@@ -6,7 +6,7 @@
 - Local chess played by two players alternately.
 
 ## Cutlass series
-- A multiplayer card game project. (trying sculling first)
+- A multiplayer card game project. (trying **"Scull King"** first)
 ### S(Server)
 - Form for server management.
 ### C(Clinet)
