@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms.VisualStyles;
-
-namespace Chess
+﻿namespace Chess
 {
     internal class FieldData
     {
@@ -53,7 +44,7 @@ namespace Chess
             }
             if (target.choose_unit != null)
             {
-                this.choose_unit 
+                this.choose_unit
                     = target.unit_matrix[target.choose_unit!.Location.X, target.choose_unit!.Location.Y];
             }
             this.attack_points = new List<Point>(target.attack_points);
@@ -302,7 +293,7 @@ namespace Chess
         private void Promotion(Unit choose_unit)
         {
             Type what = Chess.Promotion.DialogBox("Promotion", "What do you want?");
-            
+
             switch (what)
             {
                 case Type.Queen:

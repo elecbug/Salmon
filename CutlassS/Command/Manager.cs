@@ -53,7 +53,7 @@
                     {
                         string result = "";
 
-                        foreach(string str in this.server!.Names)
+                        foreach (string str in this.server!.Names)
                         {
                             result += "\r\n        >> " + str;
                         }

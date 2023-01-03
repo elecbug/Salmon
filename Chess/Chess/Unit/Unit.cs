@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Chess
+﻿namespace Chess
 {
     internal abstract class Unit : IControl
     {
@@ -35,11 +29,11 @@ namespace Chess
             this.is_alived = target.is_alived;
             this.move_count = target.move_count;
         }
-        
+
         public void Kill() => this.is_alived = false;
         public void IncreaseMove() => this.move_count++;
 
-        public abstract List<Point> AbleToMove(Unit?[,] unit_matrix); 
+        public abstract List<Point> AbleToMove(Unit?[,] unit_matrix);
         public abstract List<Point> AbleToAttack(Unit?[,] unit_matrix);
 
         public abstract Unit? Clone();

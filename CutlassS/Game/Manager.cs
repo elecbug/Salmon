@@ -8,7 +8,7 @@
         public Manager(bool defaults = true)
         {
             this.cards = new CutlassShare.Card.Object[66];
-         
+
             if (defaults)
             {
                 int i = 0;
@@ -70,7 +70,7 @@
                              CutlassShare.Protocall.Token.Level + level + CutlassShare.Protocall.Token.Splitter);
 
             int starter = new Random(DateTime.Now.Millisecond).Next(1, Socket.Server.Instance().Clients.Count);
-            
+
             for (int i = 0; i < level; i++)
             {
                 starter = PlayTurn(starter);

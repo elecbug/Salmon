@@ -63,7 +63,7 @@ namespace CutlassS
             {
                 e.Handled = true;
                 this.manager.Command = this.write_box.Text;
-                this.log_box.Text += "MANAGER >> " + this.write_box.Text; 
+                this.log_box.Text += "MANAGER >> " + this.write_box.Text;
                 this.write_box.Text = "";
                 this.log_box.Text += "SYSTEMS >> " + this.manager.ExcuteCommand() + "\r\n";
             }
