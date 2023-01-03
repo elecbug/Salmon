@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CutlassShare\CutlassShare.csproj" />
     <ProjectReference Include="..\Socket\Socket.csproj" />
   </ItemGroup>
 
