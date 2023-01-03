@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net.Sockets;
 
-namespace CutlassS.Socket
+namespace Socket
 {
     public class Client
     {
@@ -9,26 +9,30 @@ namespace CutlassS.Socket
         private StreamWriter? writer;
         private Thread? thread;
         private bool run;
+        public bool AdminMode { get; private set; }
 
         public string Name { get; private set; }
 
-        public Client(string name, string net_adress, int port)
+        public Client(string name, string net_adress, int port, bool admin_mode = false)
         {
-            this.Name = name;
+            this.Name = name + "#" + new Random(DateTime.Now.Millisecond).Next(0, 1000000);
             this.run = true;
+            this.AdminMode = admin_mode;
 
             try
             {
                 TcpClient server = new TcpClient(net_adress, port);
                 Debug.WriteLine("Get server");
 
-
                 NetworkStream network_stream = server.GetStream();
+
                 this.reader = new StreamReader(network_stream);
                 this.writer = new StreamWriter(network_stream);
 
                 this.thread = new Thread(RunRead);
                 this.thread.Start();
+
+                Send("access");
             }
             catch (Exception ex)
             {
@@ -56,7 +60,7 @@ namespace CutlassS.Socket
                         }
                     }
 
-                    Debug.WriteLine(this.Name + " is get " + line);
+                    Debug.WriteLine(this.Name + "is get:" + line);
                 }
             }
             catch (Exception ex)
@@ -69,7 +73,7 @@ namespace CutlassS.Socket
         {
             try
             {
-                this.writer!.WriteLine(this.Name + ">" + message);
+                this.writer!.WriteLine(this.Name + "$$" + message);
                 this.writer!.Flush();
             }
             catch (Exception ex)

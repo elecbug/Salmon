@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CutlassS.Command {
+namespace CutlassShare.Protocall {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace CutlassS.Command {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CutlassS.Command.Token", typeof(Token).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CutlassShare.Protocall.Token", typeof(Token).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,47 +61,65 @@ namespace CutlassS.Command {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to names.
+        ///   Looks up a localized string similar to gamestart.
         /// </summary>
-        public static string Names {
+        public static string GameStart {
             get {
-                return ResourceManager.GetString("Names", resourceCulture);
+                return ResourceManager.GetString("GameStart", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to server.
+        ///   Looks up a localized string similar to give.
         /// </summary>
-        public static string Server {
+        public static string Give {
             get {
-                return ResourceManager.GetString("Server", resourceCulture);
+                return ResourceManager.GetString("Give", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to start.
+        ///   Looks up a localized string similar to level.
         /// </summary>
-        public static string Start {
+        public static string Level {
             get {
-                return ResourceManager.GetString("Start", resourceCulture);
+                return ResourceManager.GetString("Level", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to stop.
+        ///   Looks up a localized string similar to player.
         /// </summary>
-        public static string Stop {
+        public static string Player {
             get {
-                return ResourceManager.GetString("Stop", resourceCulture);
+                return ResourceManager.GetString("Player", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to test.
+        ///   Looks up a localized string similar to $$.
         /// </summary>
-        public static string Test {
+        public static string Splitter {
             get {
-                return ResourceManager.GetString("Test", resourceCulture);
+                return ResourceManager.GetString("Splitter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to turnstart.
+        /// </summary>
+        public static string TurnStart {
+            get {
+                return ResourceManager.GetString("TurnStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to vote.
+        /// </summary>
+        public static string Vote {
+            get {
+                return ResourceManager.GetString("Vote", resourceCulture);
             }
         }
     }

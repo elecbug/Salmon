@@ -1,11 +1,9 @@
-﻿using CutlassS.Socket;
-
-namespace CutlassS.Command
+﻿namespace CutlassS.Command
 {
     public class Manager
     {
         private static Manager result = new Manager();
-        private Server? server;
+        private Socket.Server? server;
 
         public string Command { get; set; }
 
@@ -29,7 +27,7 @@ namespace CutlassS.Command
                 {
                     if (token[1] == Token.Start)
                     {
-                        this.server = Server.Instance();
+                        this.server = Socket.Server.Instance();
                         this.server.Run();
 
                         return "Server is started now.";
@@ -42,14 +40,25 @@ namespace CutlassS.Command
                     }
                     else if (token[1] == Token.Test)
                     {
-                        Client client1 = new Client("Lee", "127.0.0.1", 9764);
-                        Client client2 = new Client("Park", "127.0.0.1", 9764);
-                        Client client3 = new Client("Choi", "127.0.0.1", 9764);
+                        Socket.Client client1 = new Socket.Client("Lee", "127.0.0.1", 9764);
+                        Socket.Client client2 = new Socket.Client("Park", "127.0.0.1", 9764);
+                        Socket.Client client3 = new Socket.Client("Choi", "127.0.0.1", 9764);
 
                         client1.Send("hi");
                         client2.Send("Hello");
 
                         return "Tested now server.";
+                    }
+                    else if (token[1] == Token.Names)
+                    {
+                        string result = "";
+
+                        foreach(string str in this.server!.Names)
+                        {
+                            result += "\r\n        >> " + str;
+                        }
+
+                        return result;
                     }
                     else
                     {

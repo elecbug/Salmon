@@ -2,16 +2,18 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace CutlassS.Socket
+namespace Socket
 {
     public class Server
     {
-        public List<ClientListener> Clients { get; private set; }
-
         private Thread? thread;
         private TcpListener? tcp_listener;
         private static Server result = new Server();
         private bool run;
+
+        public List<ClientListener> Clients { get; private set; }
+        public Client? AdminClient { get; private set; }
+        public List<string> Names { get; private set; }
 
         public static Server Instance()
         {
@@ -20,6 +22,7 @@ namespace CutlassS.Socket
 
         private Server()
         {
+            this.Names = new List<string>();
             this.Clients = new List<ClientListener>();
         }
 
@@ -30,6 +33,8 @@ namespace CutlassS.Socket
             this.tcp_listener = new TcpListener(IPAddress.Parse(address), port);
 
             this.thread.Start();
+
+            this.AdminClient = new Client("@admin", address, port, true);
         }
 
         private void InRun(string address, int port)
@@ -45,7 +50,7 @@ namespace CutlassS.Socket
                         System.Net.Sockets.Socket client = this.tcp_listener.AcceptSocket();
                         IPEndPoint ip = (IPEndPoint)client.RemoteEndPoint!;
 
-                        Debug.WriteLine("Access by adress {0}", ip);
+                        Debug.WriteLine("Access by address {0}", ip);
 
                         ClientListener client_thread = new ClientListener(client);
                         this.Clients.Add(client_thread);

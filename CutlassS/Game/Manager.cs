@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CutlassC.Game
+﻿namespace CutlassC.Game
 {
     internal class Manager
     {
         private CutlassShare.Card.Object[] cards;
+        private Socket.Client? admin;
 
         public Manager(bool defaults = true)
         {
@@ -57,6 +52,38 @@ namespace CutlassC.Game
                     i++;
                 }
             }
+        }
+
+        public void Run()
+        {
+            this.admin = Socket.Server.Instance().AdminClient;
+
+            for (int i = 1; i <= 10; i++)
+            {
+                PlayGame(i);
+            }
+        }
+
+        private void PlayGame(int level)
+        {
+            this.admin!.Send(CutlassShare.Protocall.Token.GameStart + CutlassShare.Protocall.Token.Splitter +
+                             CutlassShare.Protocall.Token.Level + level + CutlassShare.Protocall.Token.Splitter);
+
+            int starter = new Random(DateTime.Now.Millisecond).Next(1, Socket.Server.Instance().Clients.Count);
+            
+            for (int i = 0; i < level; i++)
+            {
+                starter = PlayTurn(starter);
+            }
+        }
+
+        private int PlayTurn(int starter)
+        {
+            this.admin!.Send(CutlassShare.Protocall.Token.TurnStart + CutlassShare.Protocall.Token.Splitter +
+                             CutlassShare.Protocall.Token.Player + starter + CutlassShare.Protocall.Token.Splitter);
+
+            return 1;
+
         }
     }
 }

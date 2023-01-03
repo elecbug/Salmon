@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net.Sockets;
 
-namespace CutlassS.Socket
+namespace Socket
 {
     public class ClientListener
     {
@@ -40,12 +40,21 @@ namespace CutlassS.Socket
                     }
                 }
 
-                foreach (ClientListener client in Server.Instance().Clients)
+                if (line.EndsWith("access"))
                 {
-                    NetworkStream network_stream = new NetworkStream(client.Client);
-                    StreamWriter writer = new StreamWriter(network_stream);
-                    writer.WriteLine(line);
-                    writer.Flush();
+                    Server.Instance().Names.Add(line.Split('$')[0]);
+                }
+                else
+                {
+                    for (int i = 0; i < Server.Instance().Clients.Count; i++)
+                    {
+                        ClientListener client = Server.Instance().Clients[i];
+                        NetworkStream network_stream = new NetworkStream(client.Client);
+                        StreamWriter writer = new StreamWriter(network_stream);
+
+                        writer.WriteLine(line);
+                        writer.Flush();
+                    }
                 }
             }
         }
